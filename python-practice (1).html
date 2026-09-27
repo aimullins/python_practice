@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Python Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f14;
+    --panel: #161b24;
+    --panel-border: #262d3d;
+    --panel-border-hover: #3a4358;
+    --accent: #e2a860;
+    --accent2: #5fb4d9;
+    --text: #e7ecf3;
+    --text-dim: #8d99ad;
+    --success: #4ade80;
+    --success-bg: rgba(74, 222, 128, 0.12);
+    --error: #f87171;
+    --error-bg: rgba(248, 113, 113, 0.12);
+    --code-bg: #10141c;
+  }
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f4f6f9;
+      --panel: #ffffff;
+      --panel-border: #dde3ec;
+      --panel-border-hover: #c3ccdb;
+      --text: #171b24;
+      --text-dim: #5a6478;
+      --code-bg: #eef1f6;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --panel-border: #dde3ec;
+    --panel-border-hover: #c3ccdb;
+    --text: #171b24;
+    --text-dim: #5a6478;
+    --code-bg: #eef1f6;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    -webkit-font-smoothing: antialiased;
+  }
+  code, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  a, button { font-family: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, .opt:focus-visible, .card:focus-visible {
+    outline: 2px solid var(--accent2);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .brand .py { color: var(--accent); }
+  .home-btn {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .home-btn:hover { border-color: var(--panel-border-hover); color: var(--text); }
+
+  .lede {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin: 0 0 28px;
+    max-width: 60ch;
+  }
+
+  .group-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    margin: 32px 0 12px;
+  }
+  .group-title:first-of-type { margin-top: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: left;
+    color: var(--text);
+    transition: border-color .15s ease, transform .15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 88px;
+    position: relative;
+  }
+  .card:hover { border-color: var(--panel-border-hover); transform: translateY(-1px); }
+  .card .t {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .card .d {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+  .card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.72rem;
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  /* Practice view */
+  .topic-head {
+    margin-bottom: 18px;
+  }
+  .topic-head h1 {
+    font-size: 1.35rem;
+    margin: 4px 0 4px;
+  }
+  .topic-head .sub {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+  .review-lesson-link {
+    background: transparent;
+    border: none;
+    color: var(--accent2);
+    font-size: 0.85rem;
+    padding: 0;
+    margin-bottom: 14px;
+    text-align: left;
+  }
+  .review-lesson-link:hover { text-decoration: underline; }
+
+  .lesson-points {
+    margin: 0 0 16px;
+    padding-left: 20px;
+    color: var(--text);
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+  .lesson-points li { margin-bottom: 4px; }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+    margin: 14px 0 22px;
+  }
+  .dot {
+    width: 26px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--panel-border);
+  }
+  .dot.done { background: var(--success); }
+  .dot.active { background: var(--accent2); }
+
+  .qcard {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .qkind {
+    font-size: 0.72rem;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .qprompt {
+    font-size: 1.02rem;
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  pre.code {
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+  pre.code .blank-in {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    border: 1px solid var(--accent2);
+    border-radius: 4px;
+    color: var(--text);
+    padding: 1px 6px;
+    font-size: 0.88rem;
+    width: 90px;
+  }
+
+  .opts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .opt {
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    text-align: left;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    transition: border-color .15s ease;
+  }
+  .opt:hover { border-color: var(--panel-border-hover); }
+  .opt.correct { border-color: var(--success); background: var(--success-bg); }
+  .opt.wrong { border-color: var(--error); background: var(--error-bg); }
+  .opt[disabled] { cursor: default; }
+
+  .answer-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .answer-row input {
+    flex: 1;
+    background: var(--code-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .answer-row input:focus { outline: none; border-color: var(--accent2); }
+  .btn {
+    background: var(--accent2);
+    color: #0c0f14;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+  }
+
+  .feedback {
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--success-bg); color: var(--success); }
+  .feedback.wrong { background: var(--error-bg); color: var(--error); }
+  .feedback .exp { color: var(--text); display: block; margin-top: 6px; font-size: 0.88rem; }
+
+  .row-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .done-screen {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .done-screen .big {
+    font-size: 2.4rem;
+    margin-bottom: 6px;
+  }
+  .done-screen p { color: var(--text-dim); }
+
+  footer.hint {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    margin-top: 40px;
+  }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="py">Python</span> Practice</div>
+    <button class="home-btn" id="homeBtn" hidden>&#8962; Topics</button>
+  </header>
+
+  <div id="homeView">
+    <p class="lede">Click any topic to practice. Each one mixes multiple choice, predict-the-output, and fill-in-the-blank questions.</p>
+    <div id="groups"></div>
+  </div>
+
+  <div id="topicView" hidden>
+    <div class="topic-head">
+      <div class="sub" id="topicGroup"></div>
+      <h1 id="topicTitle"></h1>
+      <div class="sub" id="topicDesc"></div>
+    </div>
+    <button class="review-lesson-link" id="reviewLessonBtn" hidden>&#128214; Review lesson</button>
+    <div class="dots" id="dots"></div>
+    <div class="qcard" id="qcard"></div>
+    <div id="doneScreen" class="done-screen" hidden>
+      <div class="big">&#10003;</div>
+      <p id="doneMsg"></p>
+      <button class="btn" id="backToTopicsBtn">Back to topics</button>
+    </div>
+  </div>
+
+  <footer class="hint">Your progress is saved on this device only.</footer>
+</div>
+
+<script>
+const DATA = [
+{ group: "Basics", topics: [
+  { id:"variables", title:"Variables & Data Types", desc:"Naming rules, str/int/float/bool", lesson:{points:["A variable is a named container that stores a value.", "Names use snake_case, can't start with a digit, and can't be a reserved word like class.", "Common types: str (text), int (whole numbers), float (decimals), bool (True/False)."], example:"name = \"Ada\"\nage = 16\ngpa = 3.95\nis_enrolled = True"}, questions:[
+    { type:"mcq", prompt:"Which of these is both legal and good style for a Python variable name?",
+      options:["user_age","2cool","class","User-Age"], correct:0,
+      explain:"Variable names use snake_case, can't start with a digit, and can't be a reserved word like class." },
+    { type:"predict", code:'temperature = 98.6\nprint(temperature)', prompt:"What gets printed?",
+      answer:"98.6", explain:"temperature holds a float, and print() displays its value directly." },
+    { type:"fillblank", before:'name = "Ada"\nprint(', after:')', answer:"name",
+      explain:"To display a variable's value, put its name inside print()." }
+  ]},
+  { id:"print", title:"Output with print()", desc:"Displaying information", lesson:{points:["print() displays information on the screen.", "Pass multiple items separated by commas — Python adds a space between them automatically.", "Text you want to display literally goes in quotes; variables are written without quotes."], example:"print(\"Score:\", 100)"}, questions:[
+    { type:"mcq", prompt:'What does print("Hello", "World") display?',
+      options:["Hello World","HelloWorld","Hello,World","An error"], correct:0,
+      explain:"print() automatically puts a single space between multiple arguments." },
+    { type:"predict", code:'print(3, "apples")', prompt:"What gets printed?",
+      answer:"3 apples", explain:"The number and string are joined with a single space." },
+    { type:"fillblank", before:'score = 100\nprint("Score:", ', after:')', answer:"score",
+      explain:"Passing the variable as a second argument prints its value after the label." }
+  ]},
+  { id:"reading", title:"Reading & Speaking Code", desc:"Top-to-bottom, saying it out loud", lesson:{points:["Python runs top to bottom, one line at a time.", "Reading code aloud, like narrating it to a friend, helps you catch logic errors before running it.", "\"x equals x plus 1\" means: take x’s current value, add 1, and store the result back in x."], example:"x = 5\nx = x + 1"}, questions:[
+    { type:"mcq", prompt:"When reading Python code aloud, what order should you follow?",
+      options:["Top to bottom, line by line","Bottom to top","Randomly \u2014 order doesn't matter","Right to left"], correct:0,
+      explain:"Code executes sequentially, so tracing it top to bottom matches how it actually runs." },
+    { type:"predict", code:'a = 2\nb = 3\na = a + b\nprint(a)', prompt:"What gets printed?",
+      answer:"5", explain:"a is reassigned to a + b (2 + 3) before it's printed." },
+    { type:"fillblank", before:'x = x ', after:' 1  # increases x by 1', answer:"+",
+      explain:"Saying it out loud: \u201cx becomes x plus 1\u201d \u2014 that's the + operator." }
+  ]},
+  { id:"writing", title:"Writing Code", desc:"English to Python", lesson:{points:["Translating English into code means identifying the variable(s) involved and the operation being described.", "\"Increase the score by 10\" becomes an assignment that adds 10 to the current value.", "Look for verbs like add, subtract, multiply, or compare — they map directly to operators."], example:"score = score + 10"}, questions:[
+    { type:"mcq", prompt:'Which line matches: "Add 5 to the variable score"?',
+      options:["score = score + 5","score = 5","5 = score + 5","score(5)"], correct:0,
+      explain:"You reassign score to its old value plus 5." },
+    { type:"predict", code:'count = 10\ncount = count - 3\nprint(count)', prompt:"What gets printed?",
+      answer:"7", explain:"count is reassigned to 10 - 3." },
+    { type:"fillblank", before:'# Multiply length by width, store in area\narea = length ', after:' width', answer:"*",
+      explain:"\u201cMultiply\u201d translates directly to the * operator." }
+  ]},
+  { id:"input", title:"Input from the User", desc:"input() and prompts", lesson:{points:["input() pauses the program and waits for the person to type something.", "Whatever they type is returned as a string — always store it in a variable to use later.", "The text inside the parentheses is just a prompt shown to the user."], example:"name = input(\"What's your name? \")\nprint(\"Hi \" + name)"}, questions:[
+    { type:"mcq", prompt:"What type does input() always return?",
+      options:["A string","An integer","A float","A boolean"], correct:0,
+      explain:"input() always returns text, even if the user types digits." },
+    { type:"predict", code:'name = input("Name? ")\nprint("Hi " + name)\n# the user types: Sam', prompt:"What gets printed?",
+      answer:"Hi Sam", explain:'name becomes the string "Sam", so "Hi " + name gives "Hi Sam".' },
+    { type:"fillblank", before:'age = ', after:'(input("Age? "))', answer:"int",
+      explain:"Wrapping input() with int() converts the text into a whole number." }
+  ]},
+  { id:"typeconv", title:"Type Conversion", desc:"int() and str()", lesson:{points:["input() always returns a string, even if the person types digits.", "Use int() to convert text into a whole number, or float() for decimals.", "Use str() to convert a number back into text, which you need before concatenating it."], example:"age = int(input(\"Age? \"))"}, questions:[
+    { type:"mcq", prompt:'Which function converts the string "42" into the integer 42?',
+      options:["int()","str()","float()","input()"], correct:0,
+      explain:"int() parses text into a whole number." },
+    { type:"predict", code:'num = int("8") + 2\nprint(num)', prompt:"What gets printed?",
+      answer:"10", explain:'int("8") becomes the number 8, so 8 + 2 = 10.' },
+    { type:"fillblank", before:'value = "3.5"\nnumber = ', after:'(value)', answer:"float",
+      explain:"float() converts text with a decimal point into a decimal number." }
+  ]},
+  { id:"concat", title:"String Concatenation", desc:"Joining strings with +", lesson:{points:["+ joins strings together, end to end, with nothing added automatically.", "If you want a space between words, you have to include it yourself, like + \" \" +.", "Concatenation only works between strings — mixing in a number directly causes an error unless you convert it with str()."], example:"full = first + \" \" + last"}, questions:[
+    { type:"mcq", prompt:"What does + do when used between two strings?",
+      options:["Joins them together","Adds their lengths","Multiplies them","Causes an error"], correct:0,
+      explain:"+ between strings concatenates (joins) them." },
+    { type:"predict", code:'first = "Ann"\nlast = "Lee"\nprint(first + last)', prompt:"What gets printed?",
+      answer:"AnnLee", explain:"The two strings are joined with nothing in between them." },
+    { type:"fillblank", before:'greeting = "Hi, " + ', after:'', answer:"name",
+      explain:'"Hi, " already has the comma and space, so concatenating name finishes the greeting.' }
+  ]},
+  { id:"math", title:"Math Operations", desc:"Operators and results", lesson:{points:["Python's arithmetic operators are + - * / and ** (exponent).", "Standard order of operations applies: parentheses first, then * and /, then + and -.", "/ always returns a decimal (float) result, even when it divides evenly."], example:"area = length * width"}, questions:[
+    { type:"mcq", prompt:"Which operator raises a number to a power in Python?",
+      options:["**","^","%","//"], correct:0,
+      explain:"** is Python's exponentiation operator; ^ means something different (bitwise XOR)." },
+    { type:"predict", code:'result = 4 * 3 - 2\nprint(result)', prompt:"What gets printed?",
+      answer:"10", explain:"Multiplication happens before subtraction: 4*3=12, then 12-2=10." },
+    { type:"fillblank", before:'area = length ', after:' width', answer:"*",
+      explain:"Area of a rectangle is length times width." }
+  ]},
+  { id:"modulus", title:"The Modulus Operator", desc:"Remainder after division", lesson:{points:["% gives you the remainder left over after dividing one number by another.", "It's useful for checking even/odd, or finding what's left over after splitting into equal groups.", "% has the same precedence as * and /."], example:"print(17 % 5)   # 2"}, questions:[
+    { type:"mcq", prompt:"What does 17 % 5 evaluate to?",
+      options:["2","3","5","12"], correct:0,
+      explain:"5 goes into 17 three times (15), leaving a remainder of 2." },
+    { type:"predict", code:'print(20 % 6)', prompt:"What gets printed?",
+      answer:"2", explain:"6 goes into 20 three times (18), leaving a remainder of 2." },
+    { type:"fillblank", before:'remainder = num1 ', after:' num2', answer:"%",
+      explain:"% gives you the remainder left over after dividing evenly." }
+  ]}
+]},
+{ group: "Functions", topics: [
+  { id:"funcargs", title:"Functions & Arguments", desc:"Calling functions, arguments", lesson:{points:["A function is a named block of reusable code.", "An argument is a value you pass into a function when you call it.", "Different arguments can produce different results from the same function."], example:"print(\"Hello\")   # \"Hello\" is the argument"}, questions:[
+    { type:"mcq", prompt:'In print("Hi"), what is "Hi"?',
+      options:["An argument passed into the function","The function's name","A syntax error","A loop variable"], correct:0,
+      explain:'"Hi" is the value passed into print() to be displayed \u2014 that\u2019s an argument.' },
+    { type:"predict", code:'def shout(word):\n    print(word + "!")\n\nshout("Go")', prompt:"What gets printed?",
+      answer:"Go!", explain:'word is "Go", and word + "!" gives "Go!".' },
+    { type:"fillblank", before:'print(', after:')  # should display the number 42', answer:"42",
+      explain:"Passing 42 directly as the argument displays it." }
+  ]},
+  { id:"deffunc", title:"Defining Functions", desc:"def, headers, bodies, execution order", lesson:{points:["You define your own function with def, a name, parentheses, and a colon.", "Everything indented underneath the def line is the function's body.", "Defining a function doesn't run it — you still need to call it by name."], example:"def greet():\n    print(\"Hi there!\")"}, questions:[
+    { type:"mcq", prompt:"Which line correctly starts a function definition named greet?",
+      options:["def greet():","function greet():","def greet:","greet def():"], correct:0,
+      explain:"Python function definitions start with def, the name, parentheses, and a colon." },
+    { type:"predict", code:'def square(n):\n    return n * n\n\nprint(square(5))', prompt:"What gets printed?",
+      answer:"25", explain:"square(5) returns 5*5, which is 25." },
+    { type:"fillblank", before:'', after:' add(a, b):\n    return a + b', answer:"def",
+      explain:"def marks the start of a function definition." }
+  ]},
+  { id:"paramreturn", title:"Parameters & Return", desc:"Passing in and sending back values", lesson:{points:["Parameters are placeholders in a function's definition that receive the arguments passed in.", "return sends a value back out of the function so it can be stored or used elsewhere.", "A function without return still runs, but gives back the value None."], example:"def double(x):\n    return x * 2"}, questions:[
+    { type:"mcq", prompt:"What keyword sends a value back out of a function?",
+      options:["return","print","input","yield only"], correct:0,
+      explain:"return hands a value back to wherever the function was called." },
+    { type:"predict", code:'def double(x):\n    return x * 2\n\nresult = double(6)\nprint(result)', prompt:"What gets printed?",
+      answer:"12", explain:"double(6) returns 6*2, which is 12, stored in result." },
+    { type:"fillblank", before:'def area(length, width):\n    ', after:' length * width', answer:"return",
+      explain:"Without return, the function would compute the value but never send it back." }
+  ]},
+  { id:"random", title:"The random Module", desc:"randint() and choice()", lesson:{points:["import random gives you access to Python's randomness tools.", "random.randint(a, b) picks a whole number from a to b, including both ends.", "random.choice(a_list) picks a random item out of a list."], example:"import random\nprint(random.randint(1, 6))"}, questions:[
+    { type:"mcq", prompt:"Which function gives a random whole number between two values, inclusive?",
+      options:["randint()","choice()","random()","randrange_only()"], correct:0,
+      explain:"random.randint(a, b) picks a whole number from a to b, including both ends." },
+    { type:"predict", code:'# How many possible outcomes does\n# random.randint(1, 6) have?', prompt:"How many possible outcomes are there?",
+      answer:"6", explain:"randint(1, 6) can return 1, 2, 3, 4, 5, or 6 \u2014 six possibilities." },
+    { type:"fillblank", before:'import random\nnumber = random.', after:'(1, 10)', answer:"randint",
+      explain:"randint(1, 10) picks a random whole number from 1 to 10." }
+  ]},
+  { id:"procabs", title:"Procedural Abstraction", desc:"Reusing code with functions", lesson:{points:["Abstraction means hiding the details of how something works behind a simple name you can call.", "Once a function is written and tested, you can reuse it anywhere without rethinking its internals.", "This is how large programs stay manageable — you build on trusted building blocks."], example:"def roll_dice():\n    return random.randint(1, 6)"}, questions:[
+    { type:"mcq", prompt:"What is the main benefit of putting repeated code into a function?",
+      options:["You can reuse it without rewriting it","It converts the code to machine language","It removes the need for variables","It automatically fixes bugs"], correct:0,
+      explain:"Procedural abstraction lets you call the function by name instead of repeating its steps." },
+    { type:"predict", code:'def greet():\n    print("Hi")\n\ngreet()\ngreet()', prompt:'How many times does "Hi" print?',
+      answer:"2", explain:"greet() is called twice, so its body runs twice." },
+    { type:"fillblank", before:'def bark():\n    print("Woof")\n\n', after:'()', answer:"bark",
+      explain:"Calling bark() by name runs the code inside it, without needing to know how it works." }
+  ]}
+]},
+{ group: "Logic", topics: [
+  { id:"booleans", title:"Inequalities & Booleans", desc:"Comparisons and Boolean expressions", lesson:{points:["Comparison operators (> < >= <= == !=) compare two values and produce a Boolean.", "A Boolean is one of exactly two values: True or False.", "These comparisons are the building blocks of every decision a program makes."], example:"print(10 > 3)   # True"}, questions:[
+    { type:"mcq", prompt:"What does the expression 7 > 3 evaluate to?",
+      options:["True","False","7","An error"], correct:0,
+      explain:"7 is greater than 3, so the comparison evaluates to the Boolean True." },
+    { type:"predict", code:'print(5 == 5)', prompt:"What gets printed?",
+      answer:"True", explain:"== checks for equality; 5 equals 5, so this is True." },
+    { type:"fillblank", before:'is_adult = age ', after:' 18', answer:">=",
+      explain:'"Is an adult" means age is 18 or older \u2014 that\u2019s >=.' }
+  ]},
+  { id:"logicalops", title:"Logical Operators", desc:"and, or, not, precedence", lesson:{points:["and requires both sides to be True for the whole expression to be True.", "or only needs one side to be True.", "not flips a Boolean's value — True becomes False and vice versa."], example:"print(True and False)   # False"}, questions:[
+    { type:"mcq", prompt:"What does True and False evaluate to?",
+      options:["False","True","None","An error"], correct:0,
+      explain:"and requires both sides to be True; since one side is False, the result is False." },
+    { type:"predict", code:'print(True or False)', prompt:"What gets printed?",
+      answer:"True", explain:"or only needs one side to be True, and it is." },
+    { type:"fillblank", before:'can_ride = height >= 48 ', after:' age >= 10', answer:"and",
+      explain:"Both conditions need to be true, so and is the correct operator." }
+  ]},
+  { id:"conditionals", title:"Conditionals", desc:"if, else, elif", lesson:{points:["if runs a block of code only when its condition evaluates to True.", "else runs when the if condition was False.", "elif lets you check another condition before falling back to else, and you can chain several."], example:"if grade >= 90:\n    print(\"A\")\nelif grade >= 80:\n    print(\"B\")\nelse:\n    print(\"C or below\")"}, questions:[
+    { type:"mcq", prompt:"Which keyword checks an additional condition after an if, before falling back to else?",
+      options:["elif","elseif","then","or"], correct:0,
+      explain:"elif lets you check another condition if the first if was False." },
+    { type:"predict", code:'x = 10\nif x > 5:\n    print("big")\nelse:\n    print("small")', prompt:"What gets printed?",
+      answer:"big", explain:"10 is greater than 5, so the if branch runs." },
+    { type:"fillblank", before:'', after:' score >= 90:\n    print("A")', answer:"if",
+      explain:"if starts a conditional statement." }
+  ]}
+]},
+{ group: "Loops & Data", topics: [
+  { id:"loops", title:"Loops", desc:"for loops, range(), while loops", lesson:{points:["A for loop repeats code a set number of times, often counting through range().", "range(5) generates 0, 1, 2, 3, 4 — five values starting at 0, not including 5.", "A while loop repeats for as long as a condition stays True, instead of a fixed count."], example:"for i in range(5):\n    print(i)"}, questions:[
+    { type:"mcq", prompt:"What does range(5) produce?",
+      options:["0, 1, 2, 3, 4","1, 2, 3, 4, 5","Just the number 5","0 and 5 only"], correct:0,
+      explain:"range(5) counts from 0 up to (but not including) 5." },
+    { type:"predict", code:'for i in range(3):\n    print(i)', prompt:"What are the three printed lines, in order? (separate with spaces)",
+      answer:"0 1 2", explain:"range(3) gives 0, 1, 2 \u2014 each printed on its own line." },
+    { type:"fillblank", before:'for i in ', after:'(4):\n    print(i)', answer:"range",
+      explain:"range(4) generates the sequence the for loop counts through." }
+  ]},
+  { id:"lists", title:"Lists", desc:"Storing, accessing, traversing", lesson:{points:["A list stores multiple values in one variable, in order.", "Each item has an index, starting at 0 for the first item.", "You can loop through a list with a for loop to process every item in turn."], example:"fruits = [\"apple\", \"banana\", \"cherry\"]\nprint(fruits[0])"}, questions:[
+    { type:"mcq", prompt:"Which index gets the first item in a list?",
+      options:["0","1","-1","\"first\""], correct:0,
+      explain:"Python list indexing starts at 0." },
+    { type:"predict", code:'fruits = ["apple", "banana", "cherry"]\nprint(fruits[1])', prompt:"What gets printed?",
+      answer:"banana", explain:"Index 1 is the second item in the list, which is \"banana\"." },
+    { type:"fillblank", before:'numbers = [10, 20, 30]\nprint(numbers[', after:'])  # should print 30', answer:"2",
+      explain:"30 is the third item, at index 2." }
+  ]}
+]},
+{ group: "Algorithms", topics: [
+  { id:"searching", title:"Searching", desc:"Linear and binary search", lesson:{points:["Linear search checks each item one at a time until it finds a match, or reaches the end of the list.", "Binary search repeatedly checks the middle of the remaining range, cutting the search area in half each time.", "Binary search only works correctly if the list is already sorted."], example:"for item in my_list:\n    if item == target:\n        found = True"}, questions:[
+    { type:"mcq", prompt:"What is required for binary search to work correctly?",
+      options:["The list must already be sorted","The list must be exactly 10 items long","The list must contain only numbers","The list must be empty"], correct:0,
+      explain:"Binary search relies on eliminating half the remaining items each step, which only works on sorted data." },
+    { type:"predict", code:'# Worst case: how many comparisons\n# does linear search need on a\n# list of 8 items?', prompt:"How many comparisons, worst case?",
+      answer:"8", explain:"In the worst case, linear search checks every item one at a time." },
+    { type:"fillblank", before:'# Binary search repeatedly checks the\n# ', after:' item of the remaining range.', answer:"middle",
+      explain:"Checking the middle item lets binary search rule out half the list each time." }
+  ]},
+  { id:"algoheur", title:"Algorithms & Heuristics", desc:"Efficiency, undecidable problems", lesson:{points:["An algorithm is a precise, step-by-step set of instructions for solving a problem.", "Efficiency matters: some algorithms scale well to huge inputs, while others slow down dramatically.", "A heuristic is a shortcut strategy that's usually good enough, without guaranteeing the best possible answer.", "Some problems are intractable (technically solvable but impossibly slow) or even undecidable (no algorithm can ever solve them)."], example:null}, questions:[
+    { type:"mcq", prompt:"What is a heuristic?",
+      options:["A rule-of-thumb strategy that's usually good enough, but not guaranteed optimal","An algorithm guaranteed to be perfectly efficient","A type of loop","A syntax error"], correct:0,
+      explain:"Heuristics trade a guarantee of the best possible answer for speed and practicality." },
+    { type:"predict", code:'# True or False:\n# Every problem can be solved by a\n# computer in a reasonable amount of time.', prompt:"True or False?",
+      answer:"False", explain:"Some problems are intractable (take unreasonably long) or even undecidable (no algorithm can ever solve them)." },
+    { type:"fillblank", before:'A problem that no algorithm can ever solve is called ', after:'.', answer:"undecidable",
+      explain:"Undecidable problems are a key limit on what computers can solve, no matter how much time they're given." }
+  ]}
+]}
+];
+
+// ---------- State & storage ----------
+const STORAGE_KEY = "csp-python-practice-progress-v1";
+let progress = {};
+try {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) progress = JSON.parse(raw);
+} catch (e) { progress = {}; }
+
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+}
+
+function getTopicProgress(id) {
+  if (!progress[id]) progress[id] = { done: [false, false, false] };
+  return progress[id];
+}
+
+function allTopics() {
+  return DATA.flatMap(g => g.topics);
+}
+function findTopic(id) {
+  return allTopics().find(t => t.id === id);
+}
+
+// ---------- Views ----------
+const homeView = document.getElementById('homeView');
+const topicView = document.getElementById('topicView');
+const homeBtn = document.getElementById('homeBtn');
+const groupsEl = document.getElementById('groups');
+
+let currentTopicId = null;
+let currentQIndex = 0;
+let answered = false;
+let topicMode = 'lesson'; // 'lesson' or 'practice'
+
+function renderHome() {
+  homeView.hidden = false;
+  topicView.hidden = true;
+  homeBtn.hidden = true;
+  groupsEl.innerHTML = '';
+  DATA.forEach(g => {
+    const h = document.createElement('div');
+    h.className = 'group-title';
+    h.textContent = g.group;
+    groupsEl.appendChild(h);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    g.topics.forEach(t => {
+      const tp = getTopicProgress(t.id);
+      const doneCount = tp.done.filter(Boolean).length;
+      const card = document.createElement('button');
+      card.className = 'card';
+      card.innerHTML = `
+        ${doneCount === t.questions.length ? '<span class="badge">&#10003; done</span>' : (doneCount > 0 ? `<span class="badge" style="color:var(--accent2)">${doneCount}/${t.questions.length}</span>` : '')}
+        <span class="t">${t.title}</span>
+        <span class="d">${t.desc}</span>
+      `;
+      card.addEventListener('click', () => openTopic(t.id));
+      grid.appendChild(card);
+    });
+    groupsEl.appendChild(grid);
+  });
+}
+
+function openTopic(id) {
+  currentTopicId = id;
+  currentQIndex = 0;
+  const tp = getTopicProgress(id);
+  const firstUnsolved = tp.done.findIndex(d => !d);
+  currentQIndex = firstUnsolved === -1 ? 0 : firstUnsolved;
+  topicMode = 'lesson';
+  homeView.hidden = true;
+  topicView.hidden = false;
+  homeBtn.hidden = false;
+  renderTopic();
+}
+
+function backToTopics() {
+  renderHome();
+}
+
+homeBtn.addEventListener('click', backToTopics);
+document.getElementById('backToTopicsBtn').addEventListener('click', backToTopics);
+
+function renderTopic() {
+  const t = findTopic(currentTopicId);
+  const tp = getTopicProgress(currentTopicId);
+  document.getElementById('topicGroup').textContent = DATA.find(g => g.topics.includes(t)).group;
+  document.getElementById('topicTitle').textContent = t.title;
+  document.getElementById('topicDesc').textContent = t.desc;
+
+  const reviewBtn = document.getElementById('reviewLessonBtn');
+
+  if (topicMode === 'lesson') {
+    reviewBtn.hidden = true;
+    document.getElementById('dots').innerHTML = '';
+    document.getElementById('doneScreen').hidden = true;
+    document.getElementById('qcard').hidden = false;
+    renderLesson(t);
+    return;
+  }
+
+  reviewBtn.hidden = false;
+  reviewBtn.onclick = () => { topicMode = 'lesson'; renderTopic(); };
+
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = '';
+  t.questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (tp.done[i] ? ' done' : (i === currentQIndex ? ' active' : ''));
+    dotsEl.appendChild(d);
+  });
+
+  const allDone = tp.done.every(Boolean);
+  document.getElementById('qcard').hidden = allDone;
+  document.getElementById('doneScreen').hidden = !allDone;
+  if (allDone) {
+    document.getElementById('doneMsg').textContent = `You've completed all ${t.questions.length} questions for ${t.title}.`;
+    return;
+  }
+  renderQuestion(t, currentQIndex);
+}
+
+function renderLesson(t) {
+  const card = document.getElementById('qcard');
+  const lesson = t.lesson;
+  let html = `<div class="qkind">Lesson</div>`;
+  html += `<ul class="lesson-points">` + lesson.points.map(p => `<li>${escapeHtml(p)}</li>`).join('') + `</ul>`;
+  if (lesson.example) {
+    html += `<pre class="code">${escapeHtml(lesson.example)}</pre>`;
+  }
+  html += `<div class="row-actions" style="justify-content:flex-end">
+      <button class="btn" id="startPracticeBtn">Start Practice &#8594;</button>
+    </div>`;
+  card.innerHTML = html;
+  document.getElementById('startPracticeBtn').addEventListener('click', () => {
+    topicMode = 'practice';
+    renderTopic();
+  });
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderQuestion(t, idx) {
+  answered = false;
+  const q = t.questions[idx];
+  const card = document.getElementById('qcard');
+  const kindLabel = { mcq: "Multiple Choice", predict: "Predict the Output", fillblank: "Fill in the Blank" }[q.type];
+
+  let bodyHtml = `<div class="qkind">${kindLabel}</div><p class="qprompt">${escapeHtml(q.prompt || '')}</p>`;
+
+  if (q.type === 'mcq') {
+    bodyHtml += `<div class="opts">` + q.options.map((opt, i) =>
+      `<button class="opt" data-i="${i}">${escapeHtml(opt)}</button>`
+    ).join('') + `</div>`;
+  } else if (q.type === 'predict') {
+    bodyHtml += `<pre class="code">${escapeHtml(q.code)}</pre>`;
+    bodyHtml += `<div class="answer-row"><input type="text" id="ansInput" placeholder="Type what gets printed" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn" id="submitBtn">Check</button></div>`;
+  } else if (q.type === 'fillblank') {
+    bodyHtml += `<pre class="code">${escapeHtml(q.before)}<input class="blank-in" id="ansInput" autocomplete="off" autocapitalize="off" spellcheck="false">${escapeHtml(q.after)}</pre>`;
+    bodyHtml += `<div class="answer-row"><button class="btn" id="submitBtn">Check</button></div>`;
+  }
+
+  bodyHtml += `<div class="feedback" id="feedback"></div>`;
+  bodyHtml += `<div class="row-actions">
+      <button class="btn ghost" id="skipBtn">Skip for now</button>
+      <button class="btn" id="nextBtn" disabled>Next question</button>
+    </div>`;
+
+  card.innerHTML = bodyHtml;
+
+  if (q.type === 'mcq') {
+    card.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => handleMcqAnswer(t, idx, parseInt(btn.dataset.i, 10)));
+    });
+  } else {
+    const input = document.getElementById('ansInput');
+    const submit = document.getElementById('submitBtn');
+    const submitFn = () => handleTextAnswer(t, idx);
+    submit.addEventListener('click', submitFn);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitFn(); });
+  }
+
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    goToRelativeQuestion(t, idx, 1, false);
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    goToRelativeQuestion(t, idx, 1, false);
+  });
+}
+
+function goToRelativeQuestion(t, idx, dir) {
+  const tp = getTopicProgress(t.id);
+  let next = idx + dir;
+  if (next >= t.questions.length) next = 0;
+  if (next < 0) next = t.questions.length - 1;
+  currentQIndex = next;
+  renderTopic();
+}
+
+function showFeedback(correct, explain) {
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  fb.innerHTML = (correct ? "Correct!" : "Not quite.") + (explain ? `<span class="exp">${escapeHtml(explain)}</span>` : '');
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function markDone(t, idx) {
+  const tp = getTopicProgress(t.id);
+  tp.done[idx] = true;
+  saveProgress();
+  const dots = document.querySelectorAll('.dot');
+  if (dots[idx]) dots[idx].classList.add('done');
+}
+
+function handleMcqAnswer(t, idx, chosenIndex) {
+  if (answered) return;
+  answered = true;
+  const q = t.questions[idx];
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === chosenIndex) btn.classList.add('wrong');
+  });
+  const correct = chosenIndex === q.correct;
+  if (correct) markDone(t, idx);
+  showFeedback(correct, q.explain);
+}
+
+function normalize(s) {
+  return s.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function handleTextAnswer(t, idx) {
+  if (answered) return;
+  const q = t.questions[idx];
+  const input = document.getElementById('ansInput');
+  const val = input.value;
+  const correct = normalize(val) === normalize(q.answer);
+  answered = true;
+  input.disabled = true;
+  document.getElementById('submitBtn').disabled = true;
+  if (correct) markDone(t, idx);
+  showFeedback(correct, (correct ? q.explain : `${q.explain} The answer was: ${q.answer}`));
+}
+
+renderHome();
+</script>
+</body>
+</html>
